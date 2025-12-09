@@ -26,7 +26,7 @@ services:
       context: .  # IMPORTANTE: El contexto es la raíz para ver el pom padre
       dockerfile: risk-central-mock-service/Dockerfile
     ports:
-      - "8081:8080" # Lo exponemos en el 8081 para no chocar con el principal
+      - "8081:8081" # Lo exponemos en el 8081 para no chocar con el principal
     networks:
       - coop-network
 
@@ -37,7 +37,7 @@ services:
       context: . # Contexto raíz
       dockerfile: credit-application-service/Dockerfile
     ports:
-      - "8080:8080"
+      - "8090:8090"
     environment:
       # Conexión a BD (usamos el nombre del servicio 'db')
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coop_credit_db

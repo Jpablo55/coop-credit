@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.naming.AuthenticationException;
 import java.net.URI;
 import java.time.Instant;
 
@@ -37,6 +38,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handleGenericException(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
         problemDetail.setTitle("Internal Server Error");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Authentication failed: Bad credentials");
+        problemDetail.setTitle("Unauthorized");
+        problemDetail.setType(URI.create("https://coopcredit.com/errors/unauthorized"));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }

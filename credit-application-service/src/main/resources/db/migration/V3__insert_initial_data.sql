@@ -1,10 +1,11 @@
--- Insertar usuarios de prueba (Password para todos: "password")
--- Hash: $2a$10$X/hXjD15x... (Generado con BCrypt)
+
+
+-- Hash válido para 'password': $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
 
 INSERT INTO users (username, password) VALUES
-('admin', '$2a$10$rTr.y.t.w.x.z.ExampleHashForPassword...PleaseUseRealOne'),
-('analista', '$2a$10$rTr.y.t.w.x.z.ExampleHashForPassword...PleaseUseRealOne'),
-('afiliado', '$2a$10$rTr.y.t.w.x.z.ExampleHashForPassword...PleaseUseRealOne');
+('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy'),
+('analista', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy'),
+('afiliado', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 
 -- Asignar Roles
 -- Admin

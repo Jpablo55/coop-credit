@@ -1,0 +1,65 @@
+services:
+  # 1. Base de Datos (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: coop-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: coop_credit_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - coop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Servicio Mock (Central de Riesgo)
+  risk-central-mock-service:
+    container_name: risk-central-service
+    build:
+      context: .  # IMPORTANTE: El contexto es la raíz para ver el pom padre
+      dockerfile: risk-central-mock-service/Dockerfile
+    ports:
+      - "8081:8080" # Lo exponemos en el 8081 para no chocar con el principal
+    networks:
+      - coop-network
+
+  # 3. Servicio Principal (Aplicación de Crédito)
+  credit-application-service:
+    container_name: credit-app-service
+    build:
+      context: . # Contexto raíz
+      dockerfile: credit-application-service/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # Conexión a BD (usamos el nombre del servicio 'db')
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coop_credit_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      # Conexión al Mock (usamos el nombre del servicio 'risk-central-mock-service')
+      # Nota: Usamos el puerto interno del contenedor (8080), no el expuesto (8081)
+      RISK_CENTRAL_URL: http://risk-central-mock-service:8080
+      # Configuración JWT (Debes coincidir con lo que pusiste en Java)
+      APPLICATION_SECURITY_JWT_SECRET_KEY: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
+    depends_on:
+      db:
+        condition: service_healthy
+      risk-central-mock-service:
+        condition: service_started
+    networks:
+      - coop-network
+
+volumes:
+  postgres_data:
+
+networks:
+  coop-network:
+    driver: bridge
